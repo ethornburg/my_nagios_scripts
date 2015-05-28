@@ -10,6 +10,7 @@ NAGIOS_UNKNOWN=3
 line_mode=connected
 start_duration=5
 end_duration=0
+get_func="most_recent"
 
 #function usage
 function usage() {
@@ -27,13 +28,16 @@ options:
     -C VALUE      [required] metric critical threshold
     -U STRING     metric units
     -A STRING     metric alias
+    -f [most_recent|sum|average|max]
+                  metric calculation function across all metrics
+                     (default: most_recent [works best with only one metric])
     -G            attach graph link to output
 EOF
 }
 
 # get options
 # TODO: make long_options possible if possible
-while getopts ":hu:m:S:E:L:W:C:U:A:G" opt; do
+while getopts ":hu:m:S:E:L:W:C:U:A:Gf:" opt; do
     case "${opt}" in
         h)
             usage
@@ -71,6 +75,9 @@ while getopts ":hu:m:S:E:L:W:C:U:A:G" opt; do
         G)
             link_graph="true"
             ;;
+        f)
+            get_func=${OPTARG}
+            ;;
         *)
             usage
             exit $NAGIOS_UNKNOWN
@@ -84,6 +91,12 @@ if [ -z "${url}" ] ||
    [ -z "${warn_thresh}" ] ||
    [ -z "${crit_thresh}" ]; then
     echo "UNKNOWN $0: Failed to pass all required params"
+    exit $NAGIOS_UNKNOWN
+fi
+
+# verify that we don't have an empty func_name
+if [ -z "${get_func}" ]; then
+    echo "UNKNOWN $0: function param -f cannot be an empty string"
     exit $NAGIOS_UNKNOWN
 fi
 
@@ -109,6 +122,7 @@ fi
 
 # get all raw data from tmp_file
 all_raw_data=`cat $tmp_file`
+echo $all_raw_data
 
 # empty tmp_file for reuse
 echo "" > $tmp_file
@@ -122,7 +136,7 @@ done
 # use awk to process result and provide base message
 # awk script expects multiple metrics split by newlines
 #   and values to be comma separated and empty values as "None"
-result=$(cat $tmp_file | awk -f process_raw_graphite_data.awk -v warn_thresh=$warn_thresh crit_thresh=$crit_thresh metric="${metric_alias-$metric}")
+result=$(cat $tmp_file | awk -f process_raw_graphite_data.awk -v warn_thresh=$warn_thresh crit_thresh=$crit_thresh metric="${metric_alias-$metric}" func="${get_func}")
 
 # create graph link
 # if an alias is specified for the metric, encode alias spaces and wrap

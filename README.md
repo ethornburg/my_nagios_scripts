@@ -16,6 +16,9 @@ get_graphite.sh usage:
     -C VALUE      [required] metric critical threshold
     -U STRING     metric units
     -A STRING     metric alias
+    -f [most_recent|sum|average|max]
+                  metric calculation function across all metrics
+                     (default: most_recent [works best with only one metric])
     -G            attach graph link to output
     
 get_graphite.sh example:
