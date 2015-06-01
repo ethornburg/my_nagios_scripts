@@ -1,5 +1,11 @@
 #!/bin/bash
 
+#absolute path directory of this bash script
+BASE_PATH="`dirname \"$0\"`"
+BASE_PATH=$(cd "$BASE_PATH" && pwd)
+#path to awk script that parses output
+AWK_PARSE_SCRIPT=$BASE_PATH/process_raw_graphite_data.awk
+
 # nagios return values
 NAGIOS_OK=0
 NAGIOS_WARNING=1
@@ -135,7 +141,7 @@ done
 # use awk to process result and provide base message
 # awk script expects multiple metrics split by newlines
 #   and values to be comma separated and empty values as "None"
-result=$(cat $tmp_file | awk -f process_raw_graphite_data.awk -v warn_thresh=$warn_thresh crit_thresh=$crit_thresh metric="${metric_alias-$metric}" func="${get_func}")
+result=$(cat $tmp_file | awk -f $AWK_PARSE_SCRIPT -v warn_thresh=$warn_thresh crit_thresh=$crit_thresh metric="${metric_alias-$metric}" func="${get_func}")
 
 # create graph link
 # if an alias is specified for the metric, encode alias spaces and wrap
