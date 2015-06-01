@@ -154,8 +154,21 @@ fi
 #create html graph link for past 24 hours
 graph_link="<a target=\"_blank\" href=\"https://${url}/render/?target=${data_metric}&from=-24hrs&lineMode=${line_mode}&width=700&height=450\"> 24h Graph </a>"
 
-# echo output to Nagios
-echo $result $units ${link_graph+$graph_link}
+# add units
+resp="${result} ${units}"
+
+# add threshold if necessary
+case $result in
+    WARNING*)
+        resp+=" | warning threshold: ${warn_thresh} ${units}"
+        ;;
+    CRITICAL*)
+        resp+=" | critical threshold: ${crit_thresh} ${units}"
+        ;;
+esac
+
+# echo output to Nagios (with graph link if param set)
+echo "${resp} ${link_graph+$graph_link}"
 
 # remove temporary file
 rm $tmp_file
