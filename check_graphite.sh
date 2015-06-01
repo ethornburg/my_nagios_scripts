@@ -122,7 +122,6 @@ fi
 
 # get all raw data from tmp_file
 all_raw_data=`cat $tmp_file`
-echo $all_raw_data
 
 # empty tmp_file for reuse
 echo "" > $tmp_file
@@ -150,7 +149,7 @@ fi
 graph_link="<a target=\"_blank\" href=\"https://${url}/render/?target=${data_metric}&from=-24hrs&lineMode=${line_mode}&width=700&height=450\"> 24h Graph </a>"
 
 # echo output to Nagios
-echo $result $units ${link_graph+$qraph_link}
+echo $result $units ${link_graph+$graph_link}
 
 # remove temporary file
 rm $tmp_file

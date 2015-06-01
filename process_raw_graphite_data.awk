@@ -76,7 +76,7 @@ END{
         } else if(total >= warn_thresh) {
             print "WARNING ", metric, ": ", total
         } else {
-            print "OK: ", metric, ": ", total
+            print "OK ", metric, ": ", total
         }
     } else {
         if(total <= crit_thresh) {
