@@ -112,7 +112,7 @@ query="https://${url}/render/?target=${metric}&format=raw&from=-${start_duration
 #create temp_file for use of this script
 tmp_file=`mktemp /tmp/tmp.XXXXXXXXXX`
 res=0
-curl -k -o $tmp_file -s $query || res=$?
+curl -o $tmp_file -s $query || res=$?
 
 # throw UNKNOWN if curl had an issue with contacting graphite
 if [ ! $res -eq 0 ]; then
