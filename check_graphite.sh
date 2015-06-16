@@ -110,9 +110,9 @@ fi
 query="https://${url}/render/?target=${metric}&format=raw&from=-${start_duration}mins&until=-${end_duration}mins"
 
 #create temp_file for use of this script
-tmp_file=`mktemp ./tmp.XXXXXXXXXX`
+tmp_file=`mktemp /tmp/tmp.XXXXXXXXXX`
 res=0
-curl -o $tmp_file -s $query || res=$?
+curl -k -o $tmp_file -s $query || res=$?
 
 # throw UNKNOWN if curl had an issue with contacting graphite
 if [ ! $res -eq 0 ]; then
