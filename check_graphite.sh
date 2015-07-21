@@ -152,7 +152,7 @@ if [ ! -z "$metric_alias" ]; then
     data_metric="alias(${metric},'${encoded_alias}')"
 fi
 #create html graph link for past 24 hours
-graph_link="<a target=\"_blank\" href=\"https://${url}/render/?target=${data_metric}&from=-24hrs&lineMode=${line_mode}&width=700&height=450\"> 24h Graph </a>"
+graph_link="- 24 Hour Graph: \"https://${url}/render/?target=${data_metric}&from=-24hrs&lineMode=${line_mode}&width=700&height=450\""
 
 # add units
 resp="${result} ${units}"
