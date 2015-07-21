@@ -7,7 +7,7 @@ get_graphite.sh is used for nagios to check graphite metrics with passed warning
 get_graphite.sh usage:
 ```
 -h            prints this help
--u STRING     [required] graphite URL
+-u STRING     [required] graphite URL (required to include http:// or https://)
 -m STRING     [required] graphite metric (NOTE: do not use alias() function, use -A param instead)
 -S VALUE      duration relative start/from in minutes (default 5)
 -E VALUE      duration relative end/util in minutes (default 0)
