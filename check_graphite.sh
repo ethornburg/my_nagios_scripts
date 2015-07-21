@@ -24,7 +24,7 @@ function usage() {
 usage $0 [options]
 options:
     -h            prints this help
-    -u STRING     [required] graphite URL
+    -u STRING     [required] graphite URL (required to include https:// and http://)
     -m STRING     [required] graphite metric (NOTE: do not use alias() function, use -A param instead)
     -S VALUE      duration relative start/from in minutes (default 5)
     -E VALUE      duration relative end/util in minutes (default 0)
@@ -50,6 +50,7 @@ while getopts ":hu:m:S:E:L:W:C:U:A:Gf:" opt; do
             exit 0
             ;;
         u)
+            # url should contain https:// or http://
             url=${OPTARG}
             ;;
         m)
@@ -100,6 +101,13 @@ if [ -z "${url}" ] ||
     exit $NAGIOS_UNKNOWN
 fi
 
+# verify that http:// or https:// is included in URL
+if [[ "${url}" != "http://"* ]] &&
+   [[ "${url}" != "https://"* ]]; then
+    echo "UKNOWN $0: Failed to specify http:// or https:// in Graphite URL"
+    exit $NAGIOS_UNKNOWN
+fi
+
 # verify that we don't have an empty func_name
 if [ -z "${get_func}" ]; then
     echo "UNKNOWN $0: function param -f cannot be an empty string"
@@ -107,7 +115,7 @@ if [ -z "${get_func}" ]; then
 fi
 
 # query to get graphite metrics in raw format (consult URL API for format details)
-query="https://${url}/render/?target=${metric}&format=raw&from=-${start_duration}mins&until=-${end_duration}mins"
+query="${url}/render/?target=${metric}&format=raw&from=-${start_duration}mins&until=-${end_duration}mins"
 
 #create temp_file for use of this script
 tmp_file=`mktemp /tmp/tmp.XXXXXXXXXX`
@@ -152,7 +160,7 @@ if [ ! -z "$metric_alias" ]; then
     data_metric="alias(${metric},'${encoded_alias}')"
 fi
 #create html graph link for past 24 hours
-graph_link="- 24 Hour Graph: \"https://${url}/render/?target=${data_metric}&from=-24hrs&lineMode=${line_mode}&width=700&height=450\""
+graph_link="- 24 Hour Graph: \"${url}/render/?target=${data_metric}&from=-24hrs&lineMode=${line_mode}&width=700&height=450\""
 
 # add units
 resp="${result} ${units}"
